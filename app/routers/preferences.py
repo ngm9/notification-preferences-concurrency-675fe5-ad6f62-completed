@@ -13,7 +13,7 @@ def get_preferences(
     user_id: UUID,
     claims: TokenClaims = Depends(decode_token),
 ):
-    prefs = fetch_user_preferences(user_id)
+    prefs = fetch_user_preferences(user_id, claims.tenant_id)
     if not prefs:
         raise HTTPException(status_code=404, detail="Preferences not found")
     return PreferencesResponse(**prefs.model_dump())
@@ -25,7 +25,7 @@ def update_preferences(
     body: PreferencesUpdateRequest,
     claims: TokenClaims = Depends(decode_token),
 ):
-    updated = apply_preference_updates(user_id, body)
+    updated = apply_preference_updates(user_id, body, claims.tenant_id)
     if not updated:
         raise HTTPException(status_code=404, detail="Preferences not found")
     return PreferencesResponse(**updated.model_dump())
